@@ -1,14 +1,11 @@
 import cv2
 import os
 import numpy as np
-import pandas
 from keras.models import Sequential
-from keras.layers import Input
 from keras.layers.core import Dense,Dropout,Activation,Flatten
-from keras.layers import Conv2D,MaxPooling2D
-from keras.utils import to_categorical
+from keras.layers import Conv2D
 neg_img = np.empty((30,3,100,100),dtype=np.int32)
-pos_img = np.empty((37,3,100,100),dtype=np.int32)
+pos_img = np.empty((50,3,100,100),dtype=np.int32)
 print("keras imported")
 E_R = Sequential()
 #%%Reading the input data
@@ -52,19 +49,19 @@ E_R.summary()
 E_R.compile(loss='mean_squared_error', optimizer='Adam',metrics=['accuracy'])
 
 #%%training
-x_train=np.empty((50,3,100,100),dtype=np.int32)
+x_train=np.empty((63,3,100,100),dtype=np.int32)
 x_test=np.empty((17,3,100,100),dtype=np.int32)
-y_train=np.empty((50,1),dtype=np.int32)
+y_train=np.empty((63,1),dtype=np.int32)
 y_test=np.empty((17,1),dtype=np.int32)
 x_train[0:25,:,:,:]=neg_img[0:25,:,:,:]
-x_train[25:50,:,:,:]=pos_img[0:25,:,:,:]
+x_train[25:63,:,:,:]=pos_img[0:38,:,:,:]
 x_test[0:5,:,:,:]=neg_img[25:30,:,:,:]
 x_test[5:17,:,:,:]=pos_img[25:37,:,:,:]
 y_train[0:25,:]=np.zeros((25,1),dtype=np.int32)
-y_train[25:50,:]=np.ones((25,1),dtype=np.int32)
+y_train[25:63,:]=np.ones((38,1),dtype=np.int32)
 y_test[0:5,:]=np.zeros((5,1),dtype=np.int32)
 y_test[5:17,:]=np.ones((12,1),dtype=np.int32)
-E_R.fit(x_train,y_train)
+E_R.fit(x_train,y_train,epochs=50)
 os.chdir('C:/Users/soumil/Desktop/retina_recog')
 E_R.save('model.h5')
 print(E_R.evaluate(x_test,y_test))
